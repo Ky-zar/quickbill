@@ -14,11 +14,19 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import {
-  addDays,
   format,
   isPast,
-  subDays,
 } from 'date-fns';
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  doc,
+  onSnapshot,
+  Timestamp,
+  query,
+  orderBy,
+} from 'firebase/firestore';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,59 +55,84 @@ import {
 } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { InvoiceForm } from './invoice-form';
-import type { Invoice, InvoiceStatus } from '@/lib/types';
+import type { Invoice, InvoiceData, InvoiceStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Download, FilePlus2, MoreHorizontal, ArrowUpDown } from 'lucide-react';
-
-const initialInvoices: Invoice[] = [
-  { id: 'INV001', projectName: 'Website Redesign', client: 'Tech Corp', amount: 5000, dueDate: addDays(new Date(), 5), status: 'pending' },
-  { id: 'INV002', projectName: 'Mobile App Dev', client: 'Innovate LLC', amount: 12000, dueDate: subDays(new Date(), 10), status: 'pending' },
-  { id: 'INV003', projectName: 'Marketing Campaign', client: 'Growth Co.', amount: 7500, dueDate: subDays(new Date(), 2), status: 'paid' },
-  { id: 'INV004', projectName: 'Cloud Migration', client: 'Data Solutions', amount: 25000, dueDate: addDays(new Date(), 20), status: 'pending' },
-  { id: 'INV005', projectName: 'SEO Optimization', client: 'Rank High Inc', amount: 3000, dueDate: subDays(new Date(), 40), status: 'paid' },
-];
-
+import { db } from '@/lib/firebase';
+import { Skeleton } from './ui/skeleton';
 
 export function InvoiceTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [invoices, setInvoices] = React.useState<Invoice[]>(initialInvoices);
+  const [invoices, setInvoices] = React.useState<Invoice[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isFormOpen, setFormOpen] = React.useState(false);
   const { toast } = useToast();
 
-  const handleStatusChange = (invoiceId: string, newStatus: 'paid' | 'pending') => {
-    setInvoices(prevInvoices =>
-      prevInvoices.map(invoice =>
-        invoice.id === invoiceId ? { ...invoice, status: newStatus } : invoice
-      )
-    );
-    toast({
-      title: "Status Updated",
-      description: `Invoice ${invoiceId} marked as ${newStatus}.`,
-    })
+  React.useEffect(() => {
+    const q = query(collection(db, 'invoices'), orderBy('dueDate', 'desc'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const invoicesData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      } as Invoice));
+      setInvoices(invoicesData);
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleStatusChange = async (invoiceId: string, newStatus: 'paid' | 'pending') => {
+    const invoiceRef = doc(db, 'invoices', invoiceId);
+    try {
+      await updateDoc(invoiceRef, { status: newStatus });
+      toast({
+        title: "Status Updated",
+        description: `Invoice ${invoiceId} marked as ${newStatus}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update status.",
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleAddInvoice = (data: Omit<Invoice, 'id' | 'status'>) => {
-    const newInvoice: Invoice = {
-      ...data,
-      id: `INV${(Math.random() * 1000).toFixed(0).padStart(3, '0')}`,
-      status: 'pending',
-    };
-    setInvoices(prev => [newInvoice, ...prev]);
-    setFormOpen(false);
-    toast({
-      title: "Invoice Created",
-      description: `New invoice for ${data.client} has been added.`,
-    })
+  const handleAddInvoice = async (data: Omit<Invoice, 'id' | 'status' | 'dueDate'> & { dueDate: Date }) => {
+    try {
+      const newInvoice: InvoiceData = {
+        ...data,
+        dueDate: Timestamp.fromDate(data.dueDate),
+        status: 'pending',
+      };
+      await addDoc(collection(db, 'invoices'), newInvoice);
+      setFormOpen(false);
+      toast({
+        title: "Invoice Created",
+        description: `New invoice for ${data.client} has been added.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create invoice.",
+        variant: 'destructive',
+      });
+    }
   };
+  
+  const getDueDate = (dueDate: Invoice['dueDate']): Date => {
+    return dueDate instanceof Timestamp ? dueDate.toDate() : dueDate;
+  }
   
   const getDisplayStatus = (invoice: Invoice): { text: InvoiceStatus; variant: 'default' | 'secondary' | 'destructive' } => {
     if (invoice.status === 'paid') {
       return { text: 'paid', variant: 'default' };
     }
-    if (isPast(invoice.dueDate)) {
+    if (isPast(getDueDate(invoice.dueDate))) {
       return { text: 'overdue', variant: 'destructive' };
     }
     return { text: 'pending', variant: 'secondary' };
@@ -139,7 +172,7 @@ export function InvoiceTable() {
     {
       accessorKey: 'dueDate',
       header: 'Due Date',
-      cell: ({ row }) => format(row.getValue('dueDate'), 'MMM d, yyyy'),
+      cell: ({ row }) => format(getDueDate(row.original.dueDate), 'MMM d, yyyy'),
     },
     {
       id: 'status',
@@ -222,56 +255,65 @@ export function InvoiceTable() {
         </Dialog>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        ) : (
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        )}
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="space-x-2">
             <Button
