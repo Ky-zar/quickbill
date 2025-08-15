@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
 import {
@@ -10,21 +11,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { ChartTooltipContent, ChartContainer, type ChartConfig } from "@/components/ui/chart"
-
-const chartData = [
-  { month: "January", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "February", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "March", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "April", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "May", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "June", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "July", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "August", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "September", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "October", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "November", total: Math.floor(Math.random() * 5000) + 1000 },
-  { month: "December", total: Math.floor(Math.random() * 5000) + 1000 },
-]
+import { Skeleton } from "./ui/skeleton"
 
 const chartConfig = {
   total: {
@@ -34,6 +21,27 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function AnalyticsChart() {
+  const [chartData, setChartData] = useState<any[] | null>(null)
+
+  useEffect(() => {
+    // Simulate fetching data
+    const data = [
+      { month: "Jan", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Feb", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Mar", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Apr", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "May", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Jun", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Jul", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Aug", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Sep", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Oct", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Nov", total: Math.floor(Math.random() * 5000) + 1000 },
+      { month: "Dec", total: Math.floor(Math.random() * 5000) + 1000 },
+    ]
+    setChartData(data)
+  }, [])
+
   return (
     <Card>
       <CardHeader>
@@ -41,6 +49,7 @@ export function AnalyticsChart() {
         <CardDescription>A breakdown of your invoice amounts by month.</CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
+      {chartData ? (
         <ChartContainer config={chartConfig} className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
@@ -70,6 +79,11 @@ export function AnalyticsChart() {
             </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
+      ) : (
+        <div className="h-[400px] w-full flex items-center justify-center">
+            <Skeleton className="h-[400px] w-full" />
+        </div>
+      )}
       </CardContent>
     </Card>
   )
