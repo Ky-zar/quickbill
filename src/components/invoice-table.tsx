@@ -2,11 +2,6 @@
 
 import * as React from 'react';
 import {
-  CaretSortIcon,
-  ChevronDownIcon,
-  DotsHorizontalIcon,
-} from '@radix-ui/react-icons';
-import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
@@ -54,7 +49,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { InvoiceForm } from './invoice-form';
 import type { Invoice, InvoiceStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { Download, FilePlus2 } from 'lucide-react';
+import { Download, FilePlus2, MoreHorizontal, ArrowUpDown } from 'lucide-react';
 
 const initialInvoices: Invoice[] = [
   { id: 'INV001', projectName: 'Website Redesign', client: 'Tech Corp', amount: 5000, dueDate: addDays(new Date(), 5), status: 'pending' },
@@ -119,7 +114,7 @@ export function InvoiceTable() {
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Project
-          <CaretSortIcon className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => <div className="font-medium">{row.getValue('projectName')}</div>,
@@ -168,13 +163,13 @@ export function InvoiceTable() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuRadioGroup value={invoice.status} onValueChange={(value) => handleStatusChange(invoice.id, value as 'paid' | 'pending')}>
                 <DropdownMenuRadioItem value="pending">Pending</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="paid">Paid</DrowpdownMenuRadioItem>
+                <DropdownMenuRadioItem value="paid">Paid</DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => console.log('Downloading PDF...')}>
