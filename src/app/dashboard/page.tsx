@@ -15,7 +15,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-1 p-4 sm:p-6 md:p-8">
+      <main className="flex-1 container py-8">
         <Tabs defaultValue="invoices" className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
             <TabsTrigger value="invoices">
