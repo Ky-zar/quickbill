@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -314,11 +315,11 @@ export function InvoiceTable() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-4">
         <CardTitle>Invoices</CardTitle>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
             <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StatusFilter)}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                     <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -330,7 +331,7 @@ export function InvoiceTable() {
             </Select>
             <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild>
-                <Button>
+                <Button className="w-full sm:w-auto">
                     <FilePlus2 className="mr-2 h-4 w-4" />
                     Add Invoice
                 </Button>

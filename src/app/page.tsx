@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Button } from '@/components/ui/button';
@@ -50,7 +51,7 @@ export default function LandingPage() {
               effortlessly. Spend less time on paperwork and more time on what
               matters.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button onClick={handleGetStarted} size="lg" disabled={loading}>
                 {user ? 'Go to Dashboard' : 'Get Started for Free'}
               </Button>
@@ -145,8 +146,8 @@ export default function LandingPage() {
         )}
       </main>
       <footer className="mt-auto">
-        <div className="container mx-auto py-8 flex items-center justify-between px-4 md:px-6">
-            <p className="text-sm text-muted-foreground">
+        <div className="container mx-auto py-8 flex flex-col sm:flex-row items-center justify-between px-4 md:px-6 gap-4">
+            <p className="text-sm text-muted-foreground text-center sm:text-left">
               © 2024 QuickBill. All rights reserved.
             </p>
             <div className="flex gap-4">

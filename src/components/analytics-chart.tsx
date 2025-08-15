@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState } from "react"
@@ -201,12 +202,12 @@ export function AnalyticsChart() {
             </div>
             <div className="flex flex-col items-center gap-2 w-full sm:w-auto sm:flex-row">
               <Button onClick={downloadMonthlyReport} variant="outline" className="w-full" disabled={!chartData}>
-                  <FileText className="mr-2" />
-                  Export Monthly Report
+                  <FileText className="mr-2 h-4 w-4" />
+                  Export Monthly
               </Button>
               <Button onClick={downloadAnnualReport} variant="outline" className="w-full" disabled={!chartData}>
-                  <Download className="mr-2" />
-                  Export Annual Report
+                  <Download className="mr-2 h-4 w-4" />
+                  Export Annual
               </Button>
             </div>
         </div>

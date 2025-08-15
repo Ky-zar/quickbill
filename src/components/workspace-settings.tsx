@@ -100,12 +100,12 @@ export function WorkspaceSettings() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-start gap-2">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem className="flex-grow">
+                  <FormItem className="flex-grow w-full">
                     <FormLabel className="sr-only">Email</FormLabel>
                     <FormControl>
                       <Input placeholder="name@example.com" {...field} disabled={!isOwner} />
@@ -114,7 +114,7 @@ export function WorkspaceSettings() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={form.formState.isSubmitting || !isOwner}>
+              <Button type="submit" disabled={form.formState.isSubmitting || !isOwner} className="w-full sm:w-auto">
                 {form.formState.isSubmitting ? 'Inviting...' : 'Invite'}
               </Button>
             </form>

@@ -53,17 +53,17 @@ export default function DashboardPage() {
       <Header />
       <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <Tabs defaultValue="invoices" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:w-[600px]">
-            <TabsTrigger value="invoices">
-              <ListChecks className="mr-2"/>
+        <TabsList className="grid w-full grid-cols-3 md:w-[600px] h-auto md:h-10">
+            <TabsTrigger value="invoices" className="flex items-center gap-2">
+              <ListChecks className="h-4 w-4" />
               Invoices
             </TabsTrigger>
-            <TabsTrigger value="analytics">
-              <BarChartHorizontal className="mr-2"/>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChartHorizontal className="h-4 w-4"/>
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="settings">
-              <Settings className="mr-2" />
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
               Settings
             </TabsTrigger>
         </TabsList>
