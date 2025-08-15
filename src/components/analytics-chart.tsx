@@ -33,7 +33,7 @@ const chartConfig = {
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export function AnalyticsChart() {
-  const { user } = useAuth();
+  const { activeWorkspace } = useAuth();
   const [allInvoices, setAllInvoices] = useState<Invoice[]>([])
   const [chartData, setChartData] = useState<any[] | null>(null)
   const [availableYears, setAvailableYears] = useState<string[]>([])
@@ -42,11 +42,11 @@ export function AnalyticsChart() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
+    if (!activeWorkspace) {
         setIsLoading(false);
         return;
     };
-    const q = query(collection(db, 'invoices'), where('userId', '==', user.uid));
+    const q = query(collection(db, 'invoices'), where('workspaceId', '==', activeWorkspace.id));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const invoicesData = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -73,7 +73,7 @@ export function AnalyticsChart() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [activeWorkspace]);
 
   useEffect(() => {
     if (allInvoices.length > 0) {

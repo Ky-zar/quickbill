@@ -7,16 +7,16 @@ import { useAuth } from './auth-provider';
 import { Skeleton } from './ui/skeleton';
 
 const AuthGuard = ({ children }: { children: ReactNode }) => {
-  const { user, loading } = useAuth();
+  const { user, activeWorkspace, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && (!user || !activeWorkspace)) {
       router.push('/');
     }
-  }, [user, loading, router]);
+  }, [user, activeWorkspace, loading, router]);
 
-  if (loading || !user) {
+  if (loading || !user || !activeWorkspace) {
     return (
         <div className="flex flex-col min-h-screen">
             <header className="sticky top-0 z-50 w-full border-b bg-card">

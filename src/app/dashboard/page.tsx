@@ -17,13 +17,13 @@ import { db } from "@/lib/firebase";
 import type { Invoice } from "@/lib/types";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { activeWorkspace } = useAuth();
   const [invoices, setInvoices] = React.useState<Invoice[]>([]);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
 
   React.useEffect(() => {
-    if (!user) return;
-    const q = query(collection(db, 'invoices'), where('userId', '==', user.uid));
+    if (!activeWorkspace) return;
+    const q = query(collection(db, 'invoices'), where('workspaceId', '==', activeWorkspace.id));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const invoicesData = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -32,7 +32,7 @@ export default function DashboardPage() {
       setInvoices(invoicesData);
     });
     return () => unsubscribe();
-  }, [user]);
+  }, [activeWorkspace]);
   
   const getDueDate = (dueDate: Invoice['dueDate']): Date => {
     return dueDate instanceof Timestamp ? dueDate.toDate() : new Date(dueDate);

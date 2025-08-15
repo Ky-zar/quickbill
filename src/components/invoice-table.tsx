@@ -75,7 +75,7 @@ import { Skeleton } from './ui/skeleton';
 type StatusFilter = 'all' | InvoiceStatus;
 
 export function InvoiceTable() {
-  const { user } = useAuth();
+  const { activeWorkspace } = useAuth();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -87,13 +87,13 @@ export function InvoiceTable() {
   const { toast } = useToast();
 
   React.useEffect(() => {
-    if (!user) {
+    if (!activeWorkspace) {
         setIsLoading(false);
         return;
     };
     const q = query(
         collection(db, 'invoices'), 
-        where('userId', '==', user.uid)
+        where('workspaceId', '==', activeWorkspace.id)
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const invoicesData = querySnapshot.docs.map(doc => ({
@@ -115,7 +115,7 @@ export function InvoiceTable() {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [activeWorkspace]);
 
   const handleStatusChange = async (invoiceId: string, newStatus: 'paid' | 'pending') => {
     const invoiceRef = doc(db, 'invoices', invoiceId);
@@ -134,15 +134,15 @@ export function InvoiceTable() {
     }
   };
 
-  const handleAddInvoice = async (data: Omit<Invoice, 'id' | 'status' | 'userId' | 'dueDate'> & { dueDate: Date }) => {
-    if (!user) {
-        toast({ title: "Error", description: "You must be logged in to create an invoice.", variant: 'destructive' });
+  const handleAddInvoice = async (data: Omit<Invoice, 'id' | 'status' | 'workspaceId' | 'dueDate'> & { dueDate: Date }) => {
+    if (!activeWorkspace) {
+        toast({ title: "Error", description: "You must be in a workspace to create an invoice.", variant: 'destructive' });
         return;
     }
     try {
       const newInvoice: InvoiceData = {
         ...data,
-        userId: user.uid,
+        workspaceId: activeWorkspace.id,
         dueDate: Timestamp.fromDate(data.dueDate),
         status: 'pending',
       };
