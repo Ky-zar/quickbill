@@ -9,12 +9,13 @@ import Header from '@/components/header';
 import { InvoiceTable } from '@/components/invoice-table';
 import { AnalyticsChart } from '@/components/analytics-chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ListChecks, BarChartHorizontal } from 'lucide-react';
+import { ListChecks, BarChartHorizontal, Settings } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { useAuth } from "@/components/auth-provider";
 import { db } from "@/lib/firebase";
 import type { Invoice } from "@/lib/types";
+import { WorkspaceSettings } from "@/components/workspace-settings";
 
 export default function DashboardPage() {
   const { activeWorkspace } = useAuth();
@@ -52,14 +53,18 @@ export default function DashboardPage() {
       <Header />
       <main className="flex-1 container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <Tabs defaultValue="invoices" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
+        <TabsList className="grid w-full grid-cols-3 md:w-[600px]">
             <TabsTrigger value="invoices">
-            <ListChecks className="mr-2"/>
-            Invoices
+              <ListChecks className="mr-2"/>
+              Invoices
             </TabsTrigger>
             <TabsTrigger value="analytics">
-            <BarChartHorizontal className="mr-2"/>
-            Analytics
+              <BarChartHorizontal className="mr-2"/>
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="settings">
+              <Settings className="mr-2" />
+              Settings
             </TabsTrigger>
         </TabsList>
         <TabsContent value="invoices" className="mt-6">
@@ -110,6 +115,9 @@ export default function DashboardPage() {
         </TabsContent>
         <TabsContent value="analytics" className="mt-6">
             <AnalyticsChart />
+        </TabsContent>
+        <TabsContent value="settings" className="mt-6">
+          <WorkspaceSettings />
         </TabsContent>
         </Tabs>
       </main>

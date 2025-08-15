@@ -11,6 +11,7 @@ export interface UserProfile {
 export interface Workspace {
     id: string;
     name: string;
+    ownerId: string;
     members: string[]; // array of user uids
 }
 
