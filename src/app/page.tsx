@@ -1,9 +1,14 @@
+"use client"
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Clock, Zap } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/components/auth-provider';
 
 export default function LandingPage() {
+  const { user, signInWithGoogle, loading } = useAuth();
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="z-40 bg-background">
@@ -13,9 +18,15 @@ export default function LandingPage() {
             <span className="text-xl font-bold">InvoiceFlow</span>
           </Link>
           <nav>
-            <Button asChild>
-              <Link href="/dashboard">Login</Link>
-            </Button>
+            {user ? (
+              <Button asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            ) : (
+              <Button onClick={signInWithGoogle} disabled={loading}>
+                {loading ? 'Logging in...' : 'Login'}
+              </Button>
+            )}
           </nav>
         </div>
       </header>
