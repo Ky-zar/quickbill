@@ -6,7 +6,7 @@ import Link from 'next/link';
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="container z-40 bg-background">
+      <header className="container z-40 bg-background px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between py-6">
           <Link href="/" className="flex items-center gap-2">
             <Zap className="h-8 w-8 text-primary" />
@@ -20,7 +20,7 @@ export default function LandingPage() {
         </div>
       </header>
       <main className="flex-1">
-        <section className="container relative flex flex-col items-center justify-center gap-6 text-center py-20 md:py-32">
+        <section className="container relative flex flex-col items-center justify-center gap-6 text-center py-20 md:py-32 px-4 sm:px-6 lg:px-8">
           <div className="absolute top-0 -z-10 h-full w-full bg-white dark:bg-transparent"><div className="absolute bottom-auto left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-[rgba(50,133,255,0.3)] opacity-50 blur-[80px]"></div></div>
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
             Invoicing Made Simple
@@ -40,7 +40,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="features" className="container space-y-12 py-8 md:py-12 lg:py-24">
+        <section id="features" className="container space-y-12 py-8 md:py-12 lg:py-24 px-4 sm:px-6 lg:px-8">
             <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
                 <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl">Features</h2>
                 <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
@@ -78,7 +78,7 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section id="how-it-works" className="container space-y-12 bg-slate-50 dark:bg-slate-900/50 py-16 md:py-20 lg:py-28 rounded-lg">
+        <section id="how-it-works" className="container space-y-12 bg-slate-50 dark:bg-slate-900/50 py-16 md:py-20 lg:py-28 rounded-lg px-4 sm:px-6 lg:px-8">
           <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
             <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl">How It Works</h2>
             <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
@@ -104,7 +104,7 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
-      <footer className="container py-8 mt-10">
+      <footer className="container py-8 mt-10 px-4 sm:px-6 lg:px-8">
         <p className="text-center text-sm text-muted-foreground">
           © 2024 QuickBill. All rights reserved.
         </p>
