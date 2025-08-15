@@ -52,7 +52,7 @@ export default function LandingPage() {
             </p>
             <div className="flex gap-4">
               <Button onClick={handleGetStarted} size="lg" disabled={loading}>
-                Get Started for Free
+                {user ? 'Go to Dashboard' : 'Get Started for Free'}
               </Button>
             </div>
           </div>
@@ -126,21 +126,23 @@ export default function LandingPage() {
             </div>
         </section>
         
-        <section id="cta" className="py-16 md:py-20 lg:py-28">
-          <div className="container text-center">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-              Ready to Simplify Your Invoicing?
-            </h2>
-            <p className="mx-auto mt-4 max-w-[600px] text-muted-foreground md:text-xl">
-              Start managing your invoices effortlessly today. It's free to get started.
-            </p>
-            <div className="mt-6">
-              <Button onClick={handleGetStarted} size="lg" disabled={loading}>
-                Sign Up Now
-              </Button>
+        {!user && (
+          <section id="cta" className="py-16 md:py-20 lg:py-28">
+            <div className="container text-center">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                Ready to Simplify Your Invoicing?
+              </h2>
+              <p className="mx-auto mt-4 max-w-[600px] text-muted-foreground md:text-xl">
+                Start managing your invoices effortlessly today. It's free to get started.
+              </p>
+              <div className="mt-6">
+                <Button onClick={handleGetStarted} size="lg" disabled={loading}>
+                  Sign Up Now
+                </Button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
       <footer className="mt-auto">
         <div className="container py-8 flex items-center justify-between">
