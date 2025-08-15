@@ -39,7 +39,7 @@ export function InvoiceForm({ onSubmit }: InvoiceFormProps) {
     defaultValues: {
       projectName: "",
       client: "",
-      amount: undefined,
+      amount: "" as any,
     },
   })
 
