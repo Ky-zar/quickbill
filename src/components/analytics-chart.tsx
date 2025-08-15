@@ -100,7 +100,7 @@ export function AnalyticsChart() {
     }
   }, [selectedYear, allInvoices]);
 
-  const downloadYearlyReport = () => {
+  const downloadAnnualReport = () => {
     if (!chartData) return;
 
     const doc = new jsPDF();
@@ -204,9 +204,9 @@ export function AnalyticsChart() {
                   <FileText className="mr-2" />
                   Export Monthly Report
               </Button>
-              <Button onClick={downloadYearlyReport} variant="outline" className="w-full" disabled={!chartData}>
+              <Button onClick={downloadAnnualReport} variant="outline" className="w-full" disabled={!chartData}>
                   <Download className="mr-2" />
-                  Export Yearly Report
+                  Export Annual Report
               </Button>
             </div>
         </div>
