@@ -48,6 +48,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Table,
   TableBody,
   TableCell,
@@ -63,6 +70,8 @@ import { Download, FilePlus2, MoreHorizontal, ArrowUpDown } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { Skeleton } from './ui/skeleton';
 
+type StatusFilter = 'all' | InvoiceStatus;
+
 export function InvoiceTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -71,6 +80,7 @@ export function InvoiceTable() {
   const [invoices, setInvoices] = React.useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFormOpen, setFormOpen] = React.useState(false);
+  const [statusFilter, setStatusFilter] = React.useState<StatusFilter>('all');
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -173,6 +183,13 @@ export function InvoiceTable() {
     doc.save(`invoice-${invoice.id}.pdf`);
   };
 
+  const filteredInvoices = React.useMemo(() => {
+    if (statusFilter === 'all') {
+      return invoices;
+    }
+    return invoices.filter(invoice => getDisplayStatus(invoice).text === statusFilter);
+  }, [invoices, statusFilter]);
+
   const columns: ColumnDef<Invoice>[] = [
     {
       accessorKey: 'projectName',
@@ -252,7 +269,7 @@ export function InvoiceTable() {
   ];
 
   const table = useReactTable({
-    data: invoices,
+    data: filteredInvoices,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -274,20 +291,33 @@ export function InvoiceTable() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Invoices</CardTitle>
-        <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
-          <DialogTrigger asChild>
-            <Button>
-                <FilePlus2 className="mr-2 h-4 w-4" />
-                Add Invoice
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Create New Invoice</DialogTitle>
-            </DialogHeader>
-            <InvoiceForm onSubmit={handleAddInvoice} />
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2">
+            <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as StatusFilter)}>
+                <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                </SelectContent>
+            </Select>
+            <Dialog open={isFormOpen} onOpenChange={setFormOpen}>
+            <DialogTrigger asChild>
+                <Button>
+                    <FilePlus2 className="mr-2 h-4 w-4" />
+                    Add Invoice
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                <DialogTitle>Create New Invoice</DialogTitle>
+                </DialogHeader>
+                <InvoiceForm onSubmit={handleAddInvoice} />
+            </DialogContent>
+            </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (

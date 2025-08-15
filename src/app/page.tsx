@@ -10,7 +10,7 @@ export default function LandingPage() {
         <div className="container flex h-20 items-center justify-between py-6">
           <Link href="/" className="flex items-center gap-2">
             <Zap className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">QuickBill</span>
+            <span className="text-xl font-bold">InvoiceFlow</span>
           </Link>
           <nav>
             <Button asChild>
@@ -27,16 +27,13 @@ export default function LandingPage() {
               Invoicing Made Simple
             </h1>
             <p className="max-w-[700px] text-lg text-muted-foreground md:text-xl">
-              QuickBill helps you create, manage, and track your invoices
+              InvoiceFlow helps you create, manage, and track your invoices
               effortlessly. Spend less time on paperwork and more time on what
               matters.
             </p>
             <div className="flex gap-4">
               <Button asChild size="lg">
                 <Link href="/dashboard">Get Started for Free</Link>
-              </Button>
-              <Button variant="outline" size="lg">
-                Learn More
               </Button>
             </div>
           </div>
@@ -113,7 +110,7 @@ export default function LandingPage() {
       <footer className="mt-10">
         <div className="container py-8">
             <p className="text-center text-sm text-muted-foreground">
-              © 2024 QuickBill. All rights reserved.
+              © 2024 InvoiceFlow. All rights reserved.
             </p>
         </div>
       </footer>
