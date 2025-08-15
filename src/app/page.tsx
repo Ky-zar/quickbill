@@ -6,8 +6,8 @@ import Link from 'next/link';
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="container z-40 bg-background">
-        <div className="flex h-20 items-center justify-between py-6">
+      <header className="z-40 bg-background">
+        <div className="container flex h-20 items-center justify-between py-6">
           <Link href="/" className="flex items-center gap-2">
             <Zap className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold">QuickBill</span>
@@ -110,10 +110,12 @@ export default function LandingPage() {
             </div>
         </section>
       </main>
-      <footer className="container py-8 mt-10">
-        <p className="text-center text-sm text-muted-foreground">
-          © 2024 QuickBill. All rights reserved.
-        </p>
+      <footer className="mt-10">
+        <div className="container py-8">
+            <p className="text-center text-sm text-muted-foreground">
+              © 2024 QuickBill. All rights reserved.
+            </p>
+        </div>
       </footer>
     </div>
   );
