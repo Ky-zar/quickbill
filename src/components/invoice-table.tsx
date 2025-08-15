@@ -28,6 +28,7 @@ import {
   Timestamp,
   query,
   orderBy,
+  where,
 } from 'firebase/firestore';
 
 import { Badge } from '@/components/ui/badge';
@@ -68,11 +69,13 @@ import type { Invoice, InvoiceData, InvoiceStatus } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Download, FilePlus2, MoreHorizontal, ArrowUpDown } from 'lucide-react';
 import { db } from '@/lib/firebase';
+import { useAuth } from './auth-provider';
 import { Skeleton } from './ui/skeleton';
 
 type StatusFilter = 'all' | InvoiceStatus;
 
 export function InvoiceTable() {
+  const { user } = useAuth();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -84,7 +87,15 @@ export function InvoiceTable() {
   const { toast } = useToast();
 
   React.useEffect(() => {
-    const q = query(collection(db, 'invoices'), orderBy('dueDate', 'desc'));
+    if (!user) {
+        setIsLoading(false);
+        return;
+    };
+    const q = query(
+        collection(db, 'invoices'), 
+        where('userId', '==', user.uid),
+        orderBy('dueDate', 'desc')
+    );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const invoicesData = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -92,10 +103,13 @@ export function InvoiceTable() {
       } as Invoice));
       setInvoices(invoicesData);
       setIsLoading(false);
+    }, (error) => {
+        console.error("Error fetching invoices: ", error);
+        setIsLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const handleStatusChange = async (invoiceId: string, newStatus: 'paid' | 'pending') => {
     const invoiceRef = doc(db, 'invoices', invoiceId);
@@ -114,10 +128,15 @@ export function InvoiceTable() {
     }
   };
 
-  const handleAddInvoice = async (data: Omit<Invoice, 'id' | 'status' | 'dueDate'> & { dueDate: Date }) => {
+  const handleAddInvoice = async (data: Omit<Invoice, 'id' | 'status' | 'userId' | 'dueDate'> & { dueDate: Date }) => {
+    if (!user) {
+        toast({ title: "Error", description: "You must be logged in to create an invoice.", variant: 'destructive' });
+        return;
+    }
     try {
       const newInvoice: InvoiceData = {
         ...data,
+        userId: user.uid,
         dueDate: Timestamp.fromDate(data.dueDate),
         status: 'pending',
       };

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { collection, onSnapshot, query, Timestamp } from "firebase/firestore"
+import { collection, onSnapshot, query, Timestamp, where } from "firebase/firestore"
 import { Download } from "lucide-react"
 
 import {
@@ -18,6 +18,7 @@ import { ChartTooltipContent, ChartContainer, type ChartConfig } from "@/compone
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "./ui/skeleton"
 import { db } from "@/lib/firebase"
+import { useAuth } from "./auth-provider"
 import type { Invoice } from "@/lib/types"
 import { Button } from "./ui/button"
 
@@ -31,6 +32,7 @@ const chartConfig = {
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export function AnalyticsChart() {
+  const { user } = useAuth();
   const [allInvoices, setAllInvoices] = useState<Invoice[]>([])
   const [chartData, setChartData] = useState<any[] | null>(null)
   const [availableYears, setAvailableYears] = useState<string[]>([])
@@ -38,7 +40,11 @@ export function AnalyticsChart() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, 'invoices'));
+    if (!user) {
+        setIsLoading(false);
+        return;
+    };
+    const q = query(collection(db, 'invoices'), where('userId', '==', user.uid));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const invoicesData = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -59,10 +65,13 @@ export function AnalyticsChart() {
         setSelectedYear(new Date().getFullYear().toString());
       }
       setIsLoading(false);
+    }, (error) => {
+        console.error("Error fetching analytics data: ", error);
+        setIsLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (allInvoices.length > 0) {
@@ -125,7 +134,7 @@ export function AnalyticsChart() {
             <CardDescription>A breakdown of your invoice amounts for {selectedYear}.</CardDescription>
         </div>
         <div className="flex items-center gap-2">
-            <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <Select value={selectedYear} onValueChange={setSelectedYear} disabled={isLoading || availableYears.length === 0}>
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select a year" />
                 </SelectTrigger>
