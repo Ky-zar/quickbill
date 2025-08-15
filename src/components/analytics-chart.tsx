@@ -100,7 +100,7 @@ export function AnalyticsChart() {
     }
   }, [selectedYear, allInvoices]);
 
-  const downloadAnalyticsPdf = () => {
+  const downloadYearlyReport = () => {
     if (!chartData) return;
 
     const doc = new jsPDF();
@@ -127,7 +127,7 @@ export function AnalyticsChart() {
     doc.save(`analytics-report-${selectedYear}.pdf`);
   };
 
-  const downloadMonthlyReportPdf = () => {
+  const downloadMonthlyReport = () => {
     const year = parseInt(selectedYear, 10);
     const month = parseInt(selectedMonth, 10);
     
@@ -199,14 +199,14 @@ export function AnalyticsChart() {
                   </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button onClick={downloadMonthlyReportPdf} variant="outline" className="w-full" disabled={!chartData}>
+            <div className="flex flex-col items-center gap-2 w-full sm:w-auto sm:flex-row">
+              <Button onClick={downloadMonthlyReport} variant="outline" className="w-full" disabled={!chartData}>
                   <FileText className="mr-2" />
                   Export Monthly Report
               </Button>
-              <Button onClick={downloadAnalyticsPdf} variant="outline" size="icon" disabled={!chartData}>
-                  <Download className="h-4 w-4" />
-                  <span className="sr-only">Download Analytics</span>
+              <Button onClick={downloadYearlyReport} variant="outline" className="w-full" disabled={!chartData}>
+                  <Download className="mr-2" />
+                  Export Yearly Report
               </Button>
             </div>
         </div>
