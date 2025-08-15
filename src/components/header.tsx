@@ -1,6 +1,7 @@
 
 "use client"
 
+import * as React from 'react';
 import { Zap, LogOut, Check, ChevronsUpDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
