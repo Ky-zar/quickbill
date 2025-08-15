@@ -1,6 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -138,6 +140,39 @@ export function InvoiceTable() {
     return { text: 'pending', variant: 'secondary' };
   };
 
+  const downloadPdf = (invoice: Invoice) => {
+    const doc = new jsPDF();
+    const { text: status } = getDisplayStatus(invoice);
+    
+    doc.setFontSize(22);
+    doc.text("Invoice", 14, 22);
+
+    doc.setFontSize(12);
+    doc.text(`Invoice ID: ${invoice.id}`, 14, 32)
+    doc.text(`Date: ${format(new Date(), 'MMM d, yyyy')}`, 14, 38)
+    
+    autoTable(doc, {
+      startY: 50,
+      head: [['Project', 'Client', 'Due Date', 'Status', 'Amount']],
+      body: [
+        [
+          invoice.projectName,
+          invoice.client,
+          format(getDueDate(invoice.dueDate), 'MMM d, yyyy'),
+          status,
+          new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          }).format(invoice.amount)
+        ]
+      ],
+      theme: 'striped',
+      headStyles: { fillColor: [34, 139, 230] }
+    });
+    
+    doc.save(`invoice-${invoice.id}.pdf`);
+  };
+
   const columns: ColumnDef<Invoice>[] = [
     {
       accessorKey: 'projectName',
@@ -205,7 +240,7 @@ export function InvoiceTable() {
                 <DropdownMenuRadioItem value="paid">Paid</DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => console.log('Downloading PDF...')}>
+              <DropdownMenuItem onClick={() => downloadPdf(invoice)}>
                 <Download className="mr-2 h-4 w-4" />
                 Download PDF
               </DropdownMenuItem>
