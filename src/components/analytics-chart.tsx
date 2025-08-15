@@ -1,8 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { collection, onSnapshot, query, Timestamp } from "firebase/firestore"
+import { Download } from "lucide-react"
 
 import {
   Card,
@@ -16,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "./ui/skeleton"
 import { db } from "@/lib/firebase"
 import type { Invoice } from "@/lib/types"
+import { Button } from "./ui/button"
 
 const chartConfig = {
   total: {
@@ -84,27 +88,60 @@ export function AnalyticsChart() {
         setChartData(emptyData);
     }
   }, [selectedYear, allInvoices]);
+
+  const downloadAnalyticsPdf = () => {
+    if (!chartData) return;
+
+    const doc = new jsPDF();
+
+    doc.setFontSize(22);
+    doc.text(`Invoice Analytics Report - ${selectedYear}`, 14, 22);
+
+    const tableData = chartData.map(data => [
+      data.month,
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(data.total)
+    ]);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [['Month', 'Total Amount']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [34, 139, 230] },
+    });
+
+    doc.save(`analytics-report-${selectedYear}.pdf`);
+  };
   
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-row items-start justify-between">
         <div>
             <CardTitle>Invoice Analytics</CardTitle>
             <CardDescription>A breakdown of your invoice amounts for {selectedYear}.</CardDescription>
         </div>
-        <Select value={selectedYear} onValueChange={setSelectedYear}>
-            <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a year" />
-            </SelectTrigger>
-            <SelectContent>
-                {availableYears.length > 0 ? (
-                    availableYears.map(year => <SelectItem key={year} value={year}>{year}</SelectItem>)
-                ) : (
-                    <SelectItem value={new Date().getFullYear().toString()} disabled>No data</SelectItem>
-                )}
-            </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a year" />
+                </SelectTrigger>
+                <SelectContent>
+                    {availableYears.length > 0 ? (
+                        availableYears.map(year => <SelectItem key={year} value={year}>{year}</SelectItem>)
+                    ) : (
+                        <SelectItem value={new Date().getFullYear().toString()} disabled>No data</SelectItem>
+                    )}
+                </SelectContent>
+            </Select>
+            <Button onClick={downloadAnalyticsPdf} variant="outline" size="icon" disabled={!chartData}>
+                <Download className="h-4 w-4" />
+                <span className="sr-only">Download PDF</span>
+            </Button>
+        </div>
       </CardHeader>
       <CardContent className="pl-2">
       {isLoading || !chartData ? (
