@@ -9,6 +9,14 @@ import { useAuth } from '@/components/auth-provider';
 export default function LandingPage() {
   const { user, signInWithGoogle, loading } = useAuth();
 
+  const handleGetStarted = () => {
+    if (user) {
+      window.location.href = '/dashboard';
+    } else {
+      signInWithGoogle();
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="z-40 bg-background">
@@ -43,8 +51,8 @@ export default function LandingPage() {
               matters.
             </p>
             <div className="flex gap-4">
-              <Button asChild size="lg">
-                <Link href="/dashboard">Get Started for Free</Link>
+              <Button onClick={handleGetStarted} size="lg" disabled={loading}>
+                Get Started for Free
               </Button>
             </div>
           </div>
@@ -117,12 +125,36 @@ export default function LandingPage() {
                 </div>
             </div>
         </section>
+        
+        <section id="cta" className="py-16 md:py-20 lg:py-28">
+          <div className="container text-center">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+              Ready to Simplify Your Invoicing?
+            </h2>
+            <p className="mx-auto mt-4 max-w-[600px] text-muted-foreground md:text-xl">
+              Start managing your invoices effortlessly today. It's free to get started.
+            </p>
+            <div className="mt-6">
+              <Button onClick={handleGetStarted} size="lg" disabled={loading}>
+                Sign Up Now
+              </Button>
+            </div>
+          </div>
+        </section>
       </main>
-      <footer className="mt-10">
-        <div className="container py-8">
-            <p className="text-center text-sm text-muted-foreground">
+      <footer className="mt-auto">
+        <div className="container py-8 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
               © 2024 InvoiceFlow. All rights reserved.
             </p>
+            <div className="flex gap-4">
+              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+                Terms of Service
+              </Link>
+              <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">
+                Privacy Policy
+              </Link>
+            </div>
         </div>
       </footer>
     </div>
