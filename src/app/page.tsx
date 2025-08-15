@@ -20,10 +20,10 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="z-40 bg-background">
-        <div className="container flex h-20 items-center justify-between py-6">
+        <div className="container mx-auto flex h-20 items-center justify-between py-6 px-4 md:px-6">
           <Link href="/" className="flex items-center gap-2">
             <Zap className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">InvoiceFlow</span>
+            <span className="text-xl font-bold">QuickBill</span>
           </Link>
           <nav>
             {user ? (
@@ -41,12 +41,12 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="relative">
           <div className="absolute top-0 -z-10 h-full w-full bg-white dark:bg-transparent"><div className="absolute bottom-auto left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-[rgba(50,133,255,0.3)] opacity-50 blur-[80px]"></div></div>
-          <div className="container flex flex-col items-center justify-center gap-6 text-center py-20 md:py-32">
+          <div className="container mx-auto flex flex-col items-center justify-center gap-6 text-center py-20 md:py-32 px-4 md:px-6">
             <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              Invoicing Made Simple
+              Track invoices. Get paid. Stay organized.
             </h1>
             <p className="max-w-[700px] text-lg text-muted-foreground md:text-xl">
-              InvoiceFlow helps you create, manage, and track your invoices
+              QuickBill helps you create, manage, and track your invoices
               effortlessly. Spend less time on paperwork and more time on what
               matters.
             </p>
@@ -59,7 +59,7 @@ export default function LandingPage() {
         </section>
 
         <section id="features" className="py-8 md:py-12 lg:py-24">
-            <div className="container">
+            <div className="container mx-auto px-4 md:px-6">
                 <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
                     <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl">Features</h2>
                     <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
@@ -99,7 +99,7 @@ export default function LandingPage() {
         </section>
 
         <section id="how-it-works" className="bg-slate-50 dark:bg-slate-900/50 py-16 md:py-20 lg:py-28">
-            <div className="container">
+            <div className="container mx-auto px-4 md:px-6">
                 <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
                     <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl">How It Works</h2>
                     <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
@@ -128,7 +128,7 @@ export default function LandingPage() {
         
         {!user && (
           <section id="cta" className="py-16 md:py-20 lg:py-28">
-            <div className="container text-center">
+            <div className="container mx-auto text-center px-4 md:px-6">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                 Ready to Simplify Your Invoicing?
               </h2>
@@ -145,9 +145,9 @@ export default function LandingPage() {
         )}
       </main>
       <footer className="mt-auto">
-        <div className="container py-8 flex items-center justify-between">
+        <div className="container mx-auto py-8 flex items-center justify-between px-4 md:px-6">
             <p className="text-sm text-muted-foreground">
-              © 2024 InvoiceFlow. All rights reserved.
+              © 2024 QuickBill. All rights reserved.
             </p>
             <div className="flex gap-4">
               <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">

@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/components/auth-provider';
 
 export const metadata: Metadata = {
-  title: 'InvoiceFlow',
-  description: 'Effortlessly manage your invoices.',
+  title: 'QuickBill',
+  description: 'Track invoices. Get paid. Stay organized.',
 };
 
 export default function RootLayout({

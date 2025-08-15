@@ -18,35 +18,21 @@ import { Skeleton } from './ui/skeleton';
 export default function Header() {
   const { user, signOut, loading } = useAuth();
 
-  if (loading) {
-    return (
-      <header className="sticky top-0 z-50 w-full border-b bg-card">
-        <div className="container flex h-16 items-center">
-          <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg mr-auto">
-            <Zap className="h-6 w-6 text-primary" />
-            <span>InvoiceFlow</span>
-          </Link>
-          <Skeleton className="h-9 w-9 rounded-full" />
-        </div>
-      </header>
-    )
-  }
-
-  if (!user) return null;
-
-  return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card">
-      <div className="container flex h-16 items-center">
-        <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg mr-auto">
-          <Zap className="h-6 w-6 text-primary" />
-          <span>InvoiceFlow</span>
-        </Link>
+  const headerContent = (
+    <>
+      <Link href="/dashboard" className="flex items-center gap-2 font-bold text-lg mr-auto">
+        <Zap className="h-6 w-6 text-primary" />
+        <span>QuickBill</span>
+      </Link>
+      {loading ? (
+        <Skeleton className="h-9 w-9 rounded-full" />
+      ) : user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-9 w-9">
                 <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} data-ai-hint="profile picture" />
-                <AvatarFallback>{user.displayName?.[0] ?? 'U'}</AvatarFallback>
+                <AvatarFallback>{user.displayName?.[0]?.toUpperCase() ?? 'U'}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
@@ -66,6 +52,14 @@ export default function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      ) : null}
+    </>
+  );
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-card">
+      <div className="container mx-auto flex h-16 items-center px-4 md:px-6">
+        {headerContent}
       </div>
     </header>
   );

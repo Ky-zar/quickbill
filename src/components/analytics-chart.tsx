@@ -5,7 +5,8 @@ import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { collection, onSnapshot, query, Timestamp, where } from "firebase/firestore"
-import { Download } from "lucide-react"
+import { Download, FileText } from "lucide-react"
+import { format } from "date-fns"
 
 import {
   Card,
@@ -37,6 +38,7 @@ export function AnalyticsChart() {
   const [chartData, setChartData] = useState<any[] | null>(null)
   const [availableYears, setAvailableYears] = useState<string[]>([])
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString())
+  const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth()).toString());
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -124,32 +126,89 @@ export function AnalyticsChart() {
 
     doc.save(`analytics-report-${selectedYear}.pdf`);
   };
+
+  const downloadMonthlyReportPdf = () => {
+    const year = parseInt(selectedYear, 10);
+    const month = parseInt(selectedMonth, 10);
+    
+    const monthlyInvoices = allInvoices.filter(invoice => {
+        const date = invoice.dueDate instanceof Timestamp ? invoice.dueDate.toDate() : new Date(invoice.dueDate);
+        return date.getFullYear() === year && date.getMonth() === month;
+    });
+
+    if (monthlyInvoices.length === 0) {
+      alert("No invoices for the selected month to export.");
+      return;
+    }
+
+    const doc = new jsPDF();
+    const monthName = MONTHS[month];
+
+    doc.setFontSize(22);
+    doc.text(`Monthly Invoice Report - ${monthName} ${selectedYear}`, 14, 22);
+
+    const tableData = monthlyInvoices.map(invoice => [
+      invoice.projectName,
+      invoice.client,
+      format(invoice.dueDate instanceof Timestamp ? invoice.dueDate.toDate() : new Date(invoice.dueDate), 'MMM d, yyyy'),
+      invoice.status,
+      new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(invoice.amount)
+    ]);
+
+    autoTable(doc, {
+        startY: 30,
+        head: [['Project', 'Client', 'Due Date', 'Status', 'Amount']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { fillColor: [34, 139, 230] },
+    });
+    
+    doc.save(`monthly-report-${selectedYear}-${monthName}.pdf`);
+  };
   
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between">
+      <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
             <CardTitle>Invoice Analytics</CardTitle>
             <CardDescription>A breakdown of your invoice amounts for {selectedYear}.</CardDescription>
         </div>
-        <div className="flex items-center gap-2">
-            <Select value={selectedYear} onValueChange={setSelectedYear} disabled={isLoading || availableYears.length === 0}>
-                <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a year" />
-                </SelectTrigger>
-                <SelectContent>
-                    {availableYears.length > 0 ? (
-                        availableYears.map(year => <SelectItem key={year} value={year}>{year}</SelectItem>)
-                    ) : (
-                        <SelectItem value={new Date().getFullYear().toString()} disabled>No data</SelectItem>
-                    )}
-                </SelectContent>
-            </Select>
-            <Button onClick={downloadAnalyticsPdf} variant="outline" size="icon" disabled={!chartData}>
-                <Download className="h-4 w-4" />
-                <span className="sr-only">Download PDF</span>
-            </Button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full md:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Select value={selectedYear} onValueChange={setSelectedYear} disabled={isLoading || availableYears.length === 0}>
+                  <SelectTrigger className="w-full sm:w-[120px]">
+                      <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      {availableYears.length > 0 ? (
+                          availableYears.map(year => <SelectItem key={year} value={year}>{year}</SelectItem>)
+                      ) : (
+                          <SelectItem value={new Date().getFullYear().toString()} disabled>No data</SelectItem>
+                      )}
+                  </SelectContent>
+              </Select>
+              <Select value={selectedMonth} onValueChange={setSelectedMonth} disabled={isLoading}>
+                  <SelectTrigger className="w-full sm:w-[120px]">
+                      <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      {MONTHS.map((month, index) => (
+                          <SelectItem key={month} value={index.toString()}>{month}</SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Button onClick={downloadMonthlyReportPdf} variant="outline" className="w-full" disabled={!chartData}>
+                  <FileText className="mr-2" />
+                  Export Monthly Report
+              </Button>
+              <Button onClick={downloadAnalyticsPdf} variant="outline" size="icon" disabled={!chartData}>
+                  <Download className="h-4 w-4" />
+                  <span className="sr-only">Download Analytics</span>
+              </Button>
+            </div>
         </div>
       </CardHeader>
       <CardContent className="pl-2">
