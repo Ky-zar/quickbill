@@ -93,14 +93,20 @@ export function InvoiceTable() {
     };
     const q = query(
         collection(db, 'invoices'), 
-        where('userId', '==', user.uid),
-        orderBy('dueDate', 'desc')
+        where('userId', '==', user.uid)
     );
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const invoicesData = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       } as Invoice));
+
+      invoicesData.sort((a, b) => {
+        const dateA = a.dueDate instanceof Timestamp ? a.dueDate.toMillis() : new Date(a.dueDate).getTime();
+        const dateB = b.dueDate instanceof Timestamp ? b.dueDate.toMillis() : new Date(b.dueDate).getTime();
+        return dateB - dateA;
+      });
+
       setInvoices(invoicesData);
       setIsLoading(false);
     }, (error) => {
@@ -156,7 +162,7 @@ export function InvoiceTable() {
   };
   
   const getDueDate = (dueDate: Invoice['dueDate']): Date => {
-    return dueDate instanceof Timestamp ? dueDate.toDate() : dueDate;
+    return dueDate instanceof Timestamp ? dueDate.toDate() : new Date(dueDate);
   }
   
   const getDisplayStatus = (invoice: Invoice): { text: InvoiceStatus; variant: 'default' | 'secondary' | 'destructive' } => {
