@@ -1,6 +1,6 @@
 # QuickBill 💼 Invoice Management for Freelancers & Small Businesses
 
-Hey! I’m كايزر, and this is **QuickBill**, a full-stack web app I built to make invoicing simple, fast, and stress-free. It’s perfect for freelancers or small teams who want to **create, track, and manage invoices effortlessly**. Built with **Next.js + Firebase**, it’s fully responsive and ready to go on any device.
+Hey! This is Ky.zar and this is **QuickBill**, a full-stack app I built to make invoicing simple, fast, and stress-free. It’s perfect for freelancers or small teams who want to create, track, and manage invoices effortlessly. Built with Next.js + Firebase, it’s fully responsive and ready to go on any device.
 
 ## ✨ Key Features
 
@@ -30,6 +30,4 @@ Hey! I’m كايزر, and this is **QuickBill**, a full-stack web app I built t
 ---
 
 ## 💡 Fun fact
-This project was part of my “build-in-public” challecustomizee I create apps daily to improve my skills. Even though I use tools like Firebase Studio to speed up developmchallengecustomize everything by hand** to ensure it’s production-ready and fully functional.
-
----
+This project was part of my “build-in-public” challenge create apps daily to improve my skills. Even though I use tools like Firebase Studio to speed up development, I customize everything by hand Io ensure it’s production-ready and fully functional.
